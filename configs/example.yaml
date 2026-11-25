@@ -1,0 +1,10 @@
+listen: ":8080"
+apiToken: "dev-token"
+dbPath: "dap.db"
+buffer:
+  maxItems: 10000
+# Lightweight local time-series sample cache (config stays in SQLite).
+tsCache:
+  enabled: true
+  path: "data/ts"
+  retentionDays: 7

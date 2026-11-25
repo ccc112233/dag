@@ -1,0 +1,25 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    command: mosquitto -c /mosquitto-no-auth.conf
+    # For local test brokers only; production must enable auth/TLS.
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # Optional: run dap against host network after `go run` or build image.
+  # dap:
+  #   build:
+  #     context: ..
+  #     dockerfile: deployments/Dockerfile
+  #   ports: ["8080:8080"]
+  #   environment:
+  #     DAP_API_TOKEN: dev-token
