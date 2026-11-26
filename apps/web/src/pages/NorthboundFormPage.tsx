@@ -100,7 +100,7 @@ export function NorthboundFormPage() {
   }
 
   return (
-    <div className="config-only">
+    <div>
       <div className="page-header">
         <div>
           <h1>新建北向目标</h1>
@@ -115,7 +115,7 @@ export function NorthboundFormPage() {
           {error}
         </div>
       ) : null}
-      <form className="panel" onSubmit={onSubmit}>
+      <form className="panel config-only" onSubmit={onSubmit}>
         <div className="field">
           <label htmlFor="north-name">名称 *</label>
           <input

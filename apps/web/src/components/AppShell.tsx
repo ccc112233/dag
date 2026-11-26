@@ -28,7 +28,7 @@ export function AppShell() {
 
   return (
     <div className="app-shell">
-      <aside className={`nav ${open ? "open" : ""}`} aria-label="主导航">
+      <aside id="mobile-nav" className={`nav ${open ? "open" : ""}`} aria-label="主导航">
         <div className="brand">
           <div className="brand-name">{t.appName}</div>
           <div className="brand-sub">{t.appSubtitle}</div>

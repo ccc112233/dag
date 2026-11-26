@@ -4,12 +4,12 @@
   "version": "0.1.0",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
-    "dev": "pnpm -r --parallel run dev",
-    "dev:web": "pnpm --filter @dag/web dev",
-    "dev:server": "pnpm --filter @dag/server dev",
-    "build": "pnpm -r run build",
-    "test": "pnpm -r run test",
-    "test:unit": "pnpm --filter @dag/server test && pnpm --filter @dag/web test",
-    "lint": "pnpm -r run lint --if-present"
+    "dev": "corepack pnpm -r --parallel run dev",
+    "dev:web": "corepack pnpm --filter @dag/web dev",
+    "dev:server": "corepack pnpm --filter @dag/server dev",
+    "build": "corepack pnpm -r run build",
+    "test": "corepack pnpm -r run test",
+    "test:unit": "corepack pnpm --filter @dag/server test && corepack pnpm --filter @dag/web test",
+    "lint": "corepack pnpm -r run lint --if-present"
   }
 }

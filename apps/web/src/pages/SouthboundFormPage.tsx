@@ -85,7 +85,7 @@ export function SouthboundFormPage() {
   }
 
   return (
-    <div className="config-only">
+    <div>
       <div className="page-header">
         <div>
           <h1>新建南向通道</h1>
@@ -101,7 +101,7 @@ export function SouthboundFormPage() {
         </div>
       ) : null}
       <form
-        className="panel"
+        className="panel config-only"
         onSubmit={onSubmit}
         onChange={() => setDirty(true)}
       >

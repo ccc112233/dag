@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api, ApiError } from "../api/client";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 import { StatusBadge } from "../components/StatusBadge";
 import { useToast } from "../components/Toast";
 
@@ -36,6 +37,7 @@ export function NorthboundDetailPage() {
   const [target, setTarget] = useState<Target | null>(null);
   const [results, setResults] = useState<Result[]>([]);
   const [error, setError] = useState("");
+  const [confirmDisable, setConfirmDisable] = useState(false);
 
   async function load() {
     try {
@@ -54,23 +56,35 @@ export function NorthboundDetailPage() {
     load();
   }, [id]);
 
-  async function toggle() {
+  async function toggle(forceDisable = false) {
     if (!target) return;
+    if (target.enabled && !forceDisable) {
+      setConfirmDisable(true);
+      return;
+    }
     const path = target.enabled ? "disable" : "enable";
     try {
       const updated = await api<Target>(`/api/northbound/targets/${id}/${path}`, {
         method: "POST",
       });
       setTarget(updated);
+      setConfirmDisable(false);
       toast(updated.enabled ? "已启用" : "已停用");
       load();
     } catch (err) {
       setError((err as ApiError).message);
+      setConfirmDisable(false);
     }
   }
 
   if (!target) {
-    return error ? <div className="banner error">{error}</div> : <div className="panel">加载中…</div>;
+    return error ? (
+      <div className="banner error" role="alert">
+        {error}
+      </div>
+    ) : (
+      <div className="panel">加载中…</div>
+    );
   }
 
   return (
@@ -83,16 +97,22 @@ export function NorthboundDetailPage() {
             <StatusBadge status={target.status} />
           </p>
         </div>
-        <div className="row-actions config-only">
-          <button type="button" className="btn" onClick={toggle}>
-            {target.enabled ? "停用" : "启用"}
-          </button>
+        <div className="row-actions">
+          <div className="row-actions config-only">
+            <button type="button" className="btn" onClick={() => toggle()}>
+              {target.enabled ? "停用" : "启用"}
+            </button>
+          </div>
           <Link className="btn secondary" to="/northbound">
             返回
           </Link>
         </div>
       </div>
-      {error ? <div className="banner error">{error}</div> : null}
+      {error ? (
+        <div className="banner error" role="alert">
+          {error}
+        </div>
+      ) : null}
       <div className="panel">
         <p>
           成功 / 失败：{target.successCount} / {target.failCount}
@@ -148,6 +168,15 @@ export function NorthboundDetailPage() {
           </table>
         )}
       </div>
+      <ConfirmDialog
+        open={confirmDisable}
+        title="停用北向目标"
+        message="停用后将停止上报。确认继续？"
+        confirmLabel="停用"
+        danger
+        onClose={() => setConfirmDisable(false)}
+        onConfirm={() => toggle(true)}
+      />
     </div>
   );
 }
