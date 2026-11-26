@@ -1,0 +1,13 @@
+{
+  "name": "@dag/protocol-meta",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "build": "node -e \"console.log('protocol-meta: noop build')\"",
+    "test": "node --test src/index.test.js"
+  }
+}
