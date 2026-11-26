@@ -127,18 +127,22 @@ export function ThingModelEditPage() {
 
   if (isNew) {
     return (
-      <div className="config-only">
+      <div>
         <div className="page-header">
           <div>
             <h1>新建物模型</h1>
-            <p>先创建模型，再添加至少 3 种类型属性后启用</p>
+            <p>先创建模型，再添加至少 1 个属性后启用</p>
           </div>
           <Link className="btn secondary" to="/thing-models">
             返回
           </Link>
         </div>
-        {error ? <div className="banner error">{error}</div> : null}
-        <form className="panel" onSubmit={createModel}>
+        {error ? (
+          <div className="banner error" role="alert">
+            {error}
+          </div>
+        ) : null}
+        <form className="panel config-only" onSubmit={createModel}>
           <div className="field">
             <label htmlFor="tm-key">标识 *</label>
             <input id="tm-key" value={key} onChange={(e) => setKey(e.target.value)} required />
@@ -156,7 +160,7 @@ export function ThingModelEditPage() {
   }
 
   return (
-    <div className="config-only">
+    <div>
       <div className="page-header">
         <div>
           <h1>{model?.name || "物模型"}</h1>
@@ -166,14 +170,16 @@ export function ThingModelEditPage() {
           </p>
         </div>
         <div className="row-actions">
-          {model?.status !== "enabled" ? (
-            <button type="button" className="btn" onClick={enable}>
-              启用
+          <div className="row-actions config-only">
+            {model?.status !== "enabled" ? (
+              <button type="button" className="btn" onClick={enable}>
+                启用
+              </button>
+            ) : null}
+            <button type="button" className="btn danger" onClick={() => setConfirmDelete(true)}>
+              删除
             </button>
-          ) : null}
-          <button type="button" className="btn danger" onClick={() => setConfirmDelete(true)}>
-            删除
-          </button>
+          </div>
           <Link className="btn secondary" to="/thing-models">
             返回
           </Link>
@@ -184,7 +190,7 @@ export function ThingModelEditPage() {
           {error}
         </div>
       ) : null}
-      <form className="panel" onSubmit={saveName}>
+      <form className="panel config-only" onSubmit={saveName}>
         <div className="field">
           <label htmlFor="tm-name-edit">名称</label>
           <input id="tm-name-edit" value={name} onChange={(e) => setName(e.target.value)} />
@@ -194,7 +200,7 @@ export function ThingModelEditPage() {
         </button>
       </form>
 
-      <form className="panel" onSubmit={addProperty}>
+      <form className="panel config-only" onSubmit={addProperty}>
         <h2 style={{ marginTop: 0, fontSize: "1.05rem" }}>添加属性</h2>
         <div className="form-grid">
           <div className="field">

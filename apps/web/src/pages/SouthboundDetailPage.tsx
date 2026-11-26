@@ -56,6 +56,7 @@ export function SouthboundDetailPage() {
   const [testMsg, setTestMsg] = useState("");
   const [pending, setPending] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmDisable, setConfirmDisable] = useState(false);
   const [pointName, setPointName] = useState("");
   const [modelId, setModelId] = useState("");
   const [propertyId, setPropertyId] = useState("");
@@ -124,17 +125,23 @@ export function SouthboundDetailPage() {
     }
   }
 
-  async function toggleEnable() {
+  async function toggleEnable(forceDisable = false) {
     if (!channel) return;
+    if (channel.enabled && !forceDisable) {
+      setConfirmDisable(true);
+      return;
+    }
     const path = channel.enabled ? "disable" : "enable";
     try {
       const updated = await api<Channel>(`/api/southbound/channels/${id}/${path}`, {
         method: "POST",
       });
       setChannel(updated);
+      setConfirmDisable(false);
       toast(updated.enabled ? "已启用" : "已停用");
     } catch (err) {
       setError((err as ApiError).message);
+      setConfirmDisable(false);
     }
   }
 
@@ -173,7 +180,13 @@ export function SouthboundDetailPage() {
   if (!channel) {
     return (
       <div>
-        {error ? <div className="banner error">{error}</div> : <div className="panel">加载中…</div>}
+        {error ? (
+          <div className="banner error" role="alert">
+            {error}
+          </div>
+        ) : (
+          <div className="panel">加载中…</div>
+        )}
       </div>
     );
   }
@@ -188,13 +201,15 @@ export function SouthboundDetailPage() {
             <StatusBadge status={channel.status} />
           </p>
         </div>
-        <div className="row-actions config-only">
-          <button type="button" className="btn" onClick={toggleEnable}>
-            {channel.enabled ? "停用" : "启用"}
-          </button>
-          <button type="button" className="btn danger" onClick={() => setConfirmDelete(true)}>
-            删除
-          </button>
+        <div className="row-actions">
+          <div className="row-actions config-only">
+            <button type="button" className="btn" onClick={() => toggleEnable()}>
+              {channel.enabled ? "停用" : "启用"}
+            </button>
+            <button type="button" className="btn danger" onClick={() => setConfirmDelete(true)}>
+              删除
+            </button>
+          </div>
           <Link className="btn secondary" to="/southbound">
             返回
           </Link>
@@ -257,8 +272,8 @@ export function SouthboundDetailPage() {
       ) : null}
 
       {tab === "points" ? (
-        <div className="config-only">
-          <form className="panel" onSubmit={addPoint}>
+        <div>
+          <form className="panel config-only" onSubmit={addPoint}>
             <h2 style={{ marginTop: 0, fontSize: "1.05rem" }}>添加点位</h2>
             <div className="form-grid">
               <div className="field">
@@ -328,7 +343,7 @@ export function SouthboundDetailPage() {
                     <th>物模型</th>
                     <th>属性</th>
                     <th>地址</th>
-                    <th />
+                    <th className="config-only" />
                   </tr>
                 </thead>
                 <tbody>
@@ -338,7 +353,7 @@ export function SouthboundDetailPage() {
                       <td className="mono">{p.thingModelId.slice(0, 8)}</td>
                       <td className="mono">{p.propertyId.slice(0, 8)}</td>
                       <td className="mono">{JSON.stringify(p.addressConfig)}</td>
-                      <td>
+                      <td className="config-only">
                         <button
                           type="button"
                           className="btn secondary"
@@ -374,6 +389,15 @@ export function SouthboundDetailPage() {
         danger
         onClose={() => setConfirmDelete(false)}
         onConfirm={removeChannel}
+      />
+      <ConfirmDialog
+        open={confirmDisable}
+        title="停用通道"
+        message="停用后将停止采集。确认继续？"
+        confirmLabel="停用"
+        danger
+        onClose={() => setConfirmDisable(false)}
+        onConfirm={() => toggleEnable(true)}
       />
     </div>
   );
